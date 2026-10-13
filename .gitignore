@@ -3,6 +3,7 @@
 *.tfstate
 *.tfstate.*
 *.tfstate.backup
+*.out
 
 # Bloqueios de concorrência e crash dumps
 *.tfplan*
@@ -19,3 +20,6 @@ override.tf.json
 
 # Arquivos de credenciais da CLI
 .terraform.lock.hcl
+
+#Outros arquivos
+.gitignore

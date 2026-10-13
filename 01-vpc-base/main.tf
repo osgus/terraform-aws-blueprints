@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket  = "osgus-terraform-aws-blueprints"
-    key     = "01-vpc-base/terraform.state"
+    key     = "terraform.state"
     region  = "us-east-1"
     profile = "terraform"
   }

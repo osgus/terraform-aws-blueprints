@@ -1,7 +1,8 @@
 # Definição da VPC
-resource "aws_vpc" "vpc" {
+resource "aws_vpc" "vpc-base" {
   cidr_block = "172.16.0.0/16"
-  region     = var.aws_region
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = "vpc-base"
   }
@@ -11,7 +12,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "subnets" {
   for_each = var.subnets
 
-  vpc_id            = aws_vpc.vpc.id
+  vpc_id            = aws_vpc.vpc-base.id
   cidr_block        = each.value.cidr_block
   availability_zone = each.value.availability_zone
 
@@ -22,7 +23,7 @@ resource "aws_subnet" "subnets" {
 
 #Definição do Internet Gateway
 resource "aws_internet_gateway" "igw-vpc" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vpc-base.id
 
   tags = {
     Name = "igw-vpc"
@@ -31,15 +32,11 @@ resource "aws_internet_gateway" "igw-vpc" {
 
 #Definição da tabela de rotas usada pelas subnets públicas
 resource "aws_route_table" "rtb-public" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vpc-base.id
 
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw-vpc.id
-  }
-  route {
-    cidr_block = "172.16.0.0/16"
-    gateway_id = "local"
   }
 
   tags = {
@@ -50,12 +47,7 @@ resource "aws_route_table" "rtb-public" {
 #Definição da tabela de rotas usada pelas subnets privadas
 #OBS: A tabela de rotas privada não possui rota para a internet, caso precise acessar a internet, será necessário criar um NAT Gateway e adicionar a rota, mas oriento a criar o nategateay e incrementar a rota no projeto em que for trabalhar, pois o elastic ip necessario para o nat gateway gera custo adicional.
 resource "aws_route_table" "rtb-private" {
-  vpc_id = aws_vpc.vpc.id
-
-  route {
-    cidr_block = "172.16.0.0/16"
-    gateway_id = "local"
-  }
+  vpc_id = aws_vpc.vpc-base.id
 
   tags = {
     Name = "rtb-private"
