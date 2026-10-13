@@ -1,8 +1,8 @@
 # Definição da VPC
 resource "aws_vpc" "vpc-base" {
-  cidr_block = "172.16.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+  cidr_block = var.vpc.cidr_block
+  enable_dns_support   = var.vpc.enable_dns_support
+  enable_dns_hostnames = var.vpc.enable_dns_hostnames
   tags = {
     Name = "vpc-base"
   }

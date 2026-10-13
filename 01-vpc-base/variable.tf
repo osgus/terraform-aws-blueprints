@@ -20,6 +20,20 @@ variable "default_tags" {
   }
 }
 
+variable "vpc" {
+  description = "Configuração da VPC"
+  type = object({
+    cidr_block           = string
+    enable_dns_support   = bool
+    enable_dns_hostnames = bool
+  })
+  default = {
+    cidr_block           = "172.16.0.0/16"
+    enable_dns_support   = true
+    enable_dns_hostnames = true
+  }
+}
+
 variable "subnets" {
   description = "Configuração das subnets da VPC"
   type = map(object({
