@@ -1,35 +1,34 @@
-# Infrastructure Blueprints with Terraform and AWS
+# Blueprints de Terraform e AWS
 
-A collection of Infrastructure as Code (IaC) architectures for AWS using Terraform, designed following enterprise standards for modularity, high availability, and state governance.
+A proposta desse projeto é criar e documentar uma arquitetura de infraestrutura seguindo padrões corporativos de modularidade, alta disponibilidade segurança e governança de estado, utilizando Terraform e AWS
 
-The proposal is to decouple the network foundation layer from compute and data layers, allowing different workloads to consume the base infrastructure independently.
+o pretenção é separar a camada de rede das demais camadas de computação e dados, permitindo que diferentes cargas de trabalho consumam a infraestrutura base de forma independente.
 
-## General Architecture
+## Arquitetura Geral
+> <Diagrama em construcão...>
 
-> <Diagram under construction...>
+O repositório é estruturado em módulos independentes:
 
-The repository is structured into independent modules:
-
-| Blueprint | Directory | Architecture Scope | Status |
+| Blueprint | Diretório | Escopo da Arquitetura | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | [`01-vpc-base`](./01-vpc-base/) | Network foundation with VPC, Multi-AZ public and private subnet segmentation, Internet Gateway, route tables, and remote backend. | ✅ Completed |
+| **01** | [`01-vpc-base`](./01-vpc-base/) | VPC, segmentação de subnets públicas e privadas em Multi-AZ, Internet Gateway, tabelas de rotas e backend remoto. | Completed |
 | **02** | | | |
 | **03** | | | |
 | **04** | | | |
 
-## Prerequisites and State Backend (S3)
+## Pré-requisitos e Backend de Estado (S3)
 
-To ensure governance and safe concurrency locking, the tfstate is managed remotely in an S3 Bucket with versioning enabled.
+Para garantir governança e concorrência segura, o tfstate é gerenciado remotamente em um Bucket S3 com versionamento habilitado.
 
-Because Terraform requires the backend to be accessible during initialization, the bucket must exist in the AWS account prior to executing `terraform init`:
+Como o Terraform necessita do backend acessível durante a inicialização, o bucket deve existir previamente na conta AWS antes do comando `terraform init`:
 
 ```bash
-# 1. Set your configured AWS CLI profile
+# 1. Defina o perfil configurado da AWS CLI
 export AWS_PROFILE="YOUR-PROFILE"
 
-# 2. Create the S3 bucket intended for remote state
+# 2. Crie o bucket S3 destinado ao remote state
 aws s3api create-bucket --bucket "YOUR-BUCKET-TFSTATE" --region us-east-1
 
-# 3. Enable bucket versioning for state resilience
+# 3. Habilite o versionamento do bucket para segurança do remote state
 aws s3api put-bucket-versioning --bucket "YOUR-BUCKET-TFSTATE" --versioning-configuration Status=Enabled
 ```
