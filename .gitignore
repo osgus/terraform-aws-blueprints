@@ -22,4 +22,4 @@ override.tf.json
 .terraform.lock.hcl
 
 #Outros arquivos
-.gitignore
+.gitignore*

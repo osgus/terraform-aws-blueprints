@@ -69,7 +69,7 @@ O nome perfil aparacera entre []
 
 ```
 
-### 2. Initialization and Deployment
+### 2. Implantação
 
 ```
 # Inicialize o provider e conecte-se ao back-end remoto S3
