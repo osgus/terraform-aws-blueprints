@@ -12,7 +12,7 @@ O repositório é estruturado em módulos independentes:
 | Blueprint | Diretório | Escopo da Arquitetura | Status |
 | :--- | :--- | :--- | :--- |
 | **01** | [`01-vpc-base`](./01-vpc-base/) | VPC, segmentação de subnets públicas e privadas em Multi-AZ, Internet Gateway, tabelas de rotas e backend remoto. | Completed |
-| **02** | | | |
+| **02** | [`02-ec2-stack`](./02-ec2-stack/) | Provisiona a pilha de ALB, Aplicação e Banco de Dados desacoplada em três camadas| Completed |
 | **03** | | | |
 | **04** | | | |
 
