@@ -8,7 +8,7 @@ O objetivo deste template é gerenciar o ciclo de vida dos recursos que geram co
 
 ## Arquitetura de Aplicação e Alocação de Recursos
 
-A infraestrutura consome os recursos de rede do módulo base via `data "terraform_remote_state"` e distribui os componentes entre camadas públicas e privadas[cite: 3]:
+A infraestrutura consome os recursos de rede do módulo base via `data "terraform_remote_state"` e distribui os componentes entre camadas públicas e privadas:
 
 | Componente | Recurso Terraform | Tier / Localização | Conectividade / Função |
 | :--- | :--- | :--- | :--- |
