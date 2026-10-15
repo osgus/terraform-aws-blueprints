@@ -1,0 +1,3 @@
+# Garante que scripts de shell e templates sempre usem LF
+*.sh text eol=lf
+*.tftpl text eol=lf

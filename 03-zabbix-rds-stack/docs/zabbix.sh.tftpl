@@ -1,0 +1,119 @@
+#!/bin/bash
+for i in {1..60}; do
+    if curl -sI https://debian.org > /dev/null; then
+        echo "Internet detectada com sucesso!"
+        break
+    fi
+    sleep 2
+done
+
+set -e
+
+export DEBIAN_FRONTEND=noninteractive
+
+DB_HOST="${db_host}"
+DB_NAME="${db_name}"
+DB_USER="${db_user}"
+DB_PASS='${db_pass}'
+
+wget https://repo.zabbix.com/zabbix/8.0/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_8.0+debian13_all.deb
+dpkg -i zabbix-release_latest_8.0+debian13_all.deb
+
+apt-get update -y
+
+apt-get -y \
+  -o Dpkg::Options::="--force-confdef" \
+  -o Dpkg::Options::="--force-confold" \
+  upgrade
+
+apt install -y \
+  locales \
+  zabbix-server-mysql \
+  zabbix-frontend-php \
+  zabbix-nginx-conf \
+  zabbix-sql-scripts \
+  zabbix-agent2 \
+  default-mysql-client \
+  curl
+
+apt install -y \
+  zabbix-agent2-plugin-mongodb \
+  zabbix-agent2-plugin-mssql \
+  zabbix-agent2-plugin-postgresql
+
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+locale-gen en_US.UTF-8
+mkdir -p /usr/lib/locale
+localedef -i en_US -f UTF-8 /usr/lib/locale/en_US.UTF-8
+localedef -i en_US -f UTF-8 /usr/lib/locale/en_US.utf8
+cat << 'EOF' > /etc/default/locale
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+EOF
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+curl -sS -o /etc/ssl/certs/global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
+sed -i "s/^# DBHost=localhost/DBHost=$${DB_HOST}/" /etc/zabbix/zabbix_server.conf
+sed -i "s/^# DBPassword=/DBPassword=$${DB_PASS}/" /etc/zabbix/zabbix_server.conf
+sed -i "s|^# DBCAFile=.*|DBCAFile=/etc/ssl/certs/global-bundle.pem|" /etc/zabbix/zabbix_server.conf
+
+sed -i -E 's/^[[:space:]]*#[[:space:]]*listen[[:space:]]+8080;/        listen 80;/' /etc/zabbix/nginx.conf
+sed -i -E 's/^[[:space:]]*#[[:space:]]*server_name[[:space:]]+example\.com;/        server_name _;/' /etc/zabbix/nginx.conf
+
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/zabbix/nginx.conf /etc/nginx/conf.d/zabbix.conf
+
+export MYSQL_PWD="$${DB_PASS}"
+
+mysql --ssl-ca=/etc/ssl/certs/global-bundle.pem \
+  -h "$${DB_HOST}" \
+  -u "$${DB_USER}" \
+  -e "CREATE DATABASE IF NOT EXISTS $${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
+
+TABLE_COUNT=$(mysql --ssl-ca=/etc/ssl/certs/global-bundle.pem -h "$${DB_HOST}" -u "$${DB_USER}" -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$${DB_NAME}';")
+
+if [ "$${TABLE_COUNT}" -eq 0 ]; then
+    echo "Localizando arquivo de schema do Zabbix..."
+    SCHEMA_FILE=$(find /usr/share -name "server.sql.gz" 2>/dev/null | head -n 1)
+    
+    if [ -z "$${SCHEMA_FILE}" ]; then
+        echo "ERRO: Arquivo server.sql.gz não encontrado!" >&2
+        exit 1
+    fi
+
+    echo "Importando schema inicial a partir de: $${SCHEMA_FILE}..."
+    zcat "$${SCHEMA_FILE}" | mysql --ssl-ca=/etc/ssl/certs/global-bundle.pem --default-character-set=utf8mb4 -h "$${DB_HOST}" -u "$${DB_USER}" "$${DB_NAME}"
+fi
+
+unset MYSQL_PWD
+
+mkdir -p /etc/zabbix/web
+
+cat <<EOF > /etc/zabbix/web/zabbix.conf.php
+<?php
+// Zabbix GUI configuration file.
+\$DB['TYPE']     = 'MYSQL';
+\$DB['SERVER']   = '$${DB_HOST}';
+\$DB['PORT']     = '3306';
+\$DB['DATABASE'] = '$${DB_NAME}';
+\$DB['USER']     = '$${DB_USER}';
+\$DB['PASSWORD'] = '$${DB_PASS}';
+
+// Schema name. Used for IBM DB2 and PostgreSQL.
+\$DB['SCHEMA'] = '';
+
+// Conexão com o backend Zabbix Server local
+\$ZBX_SERVER      = '127.0.0.1';
+\$ZBX_SERVER_PORT = '10051';
+\$ZBX_SERVER_NAME = 'zabbix';
+
+\$IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
+EOF
+
+chown -R www-data:www-data /etc/zabbix/web
+
+PHP_FPM_SERVICE=$(systemctl list-unit-files | grep -oE "php[0-9\.]+-fpm" | head -n1 || echo "php8.4-fpm")
+systemctl restart zabbix-server zabbix-agent2 nginx "$${PHP_FPM_SERVICE}"
+systemctl enable zabbix-server zabbix-agent2 nginx "$${PHP_FPM_SERVICE}"

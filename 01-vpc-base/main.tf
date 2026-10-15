@@ -6,6 +6,7 @@ terraform {
     }
   }
 
+#Altere os valores abaixo para o bucket S3, chave e região do backend remoto
   backend "s3" {
     bucket  = "osgus-terraform-aws-blueprints"
     key     = "01-vpc-base/terraform.state"

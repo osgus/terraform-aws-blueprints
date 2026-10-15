@@ -5,6 +5,7 @@ terraform {
       version = "~> 6.0"
     }
   }
+  # Configure o backend para armazenar o estado do Terraform no S3 de acordo com o seu ambiente. Altere o bucket, key, region e profile conforme necessário.
   backend "s3" {
     bucket  = "osgus-terraform-aws-blueprints"
     key     = "02-glpi-ec2-stack/terraform.state"
@@ -22,6 +23,7 @@ provider "aws" {
   }
 }
 
+#Altere o valor dos atributos abaixo para o data source do estado remoto da VPC que deseja utilizar. Altere o bucket, key, region e profile conforme necessário.
 data "terraform_remote_state" "vpc-base" {
   backend = "s3"
   config = {

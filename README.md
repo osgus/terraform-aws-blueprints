@@ -13,7 +13,7 @@ O repositório é estruturado em módulos independentes:
 | :--- | :--- | :--- | :--- |
 | **01** | [`01-vpc-base`](./01-vpc-base/) | VPC, segmentação de subnets públicas e privadas em Multi-AZ, Internet Gateway, tabelas de rotas e backend remoto. | Completed |
 | **02** | [`02-ec2-stack`](./02-ec2-stack/) | Provisiona a pilha de ALB, Aplicação e Banco de Dados desacoplada em três camadas| Completed |
-| **03** | | | |
+| **03** | [`03-zabbix-rds-stack`](./03-zabbix-rds-stack/) | Provisiona a pilha de ALB, Aplicação e banco de dados relacional gerenciado (Amazon RDS MySQL) em subnets privadas dedicadas. | Completed |
 | **04** | | | |
 
 ## Pré-requisitos e Backend de Estado (S3)
@@ -21,6 +21,8 @@ O repositório é estruturado em módulos independentes:
 Para garantir governança e concorrência segura, o tfstate é gerenciado remotamente em um Bucket S3 com versionamento habilitado.
 
 Como o Terraform necessita do backend acessível durante a inicialização, o bucket deve existir previamente na conta AWS antes do comando `terraform init`:
+
+Deixarei comentarios explicitos no main.tf e no variables.tf dos parametros que precisam ser alterados para refletir o ambiente que será utilizado
 
 ```bash
 # 1. Defina o perfil configurado da AWS CLI

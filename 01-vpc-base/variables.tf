@@ -1,9 +1,11 @@
+# Altere o valor default para o perfil da AWS que deseja utilizar
 variable "aws_profile" {
   description = "Perfil da AWS a ser utilizado"
   type        = string
   default     = "terraform"
 }
 
+# Altere o valor default para o a região que deseja utilizar
 variable "aws_region" {
   description = "Região da AWS"
   type        = string
@@ -11,6 +13,7 @@ variable "aws_region" {
 
 }
 
+# Altere o valor default para o as tags que deseja utilizar
 variable "default_tags" {
   description = "Tags padrão para todos os recursos"
   type        = map(string)
@@ -20,6 +23,7 @@ variable "default_tags" {
   }
 }
 
+#Altere o valor default cidr_block para a faixa de IPs que deseja utilizar na VPC
 variable "vpc" {
   description = "Configuração da VPC"
   type = object({
@@ -34,6 +38,7 @@ variable "vpc" {
   }
 }
 
+#Altere o valor default do cidr_block, availability_zone e is_public para a faixa de IPs, zona de disponibilidade e se é pública ou privada que deseja utilizar nas subnets
 variable "subnets" {
   description = "Configuração das subnets da VPC"
   type = map(object({

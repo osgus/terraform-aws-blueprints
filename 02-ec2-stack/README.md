@@ -1,6 +1,6 @@
 # 02 — GLPI EC2 Stack
 
-Esee Blueprint provisiona a pilha de aplicação e banco de dados para fim de homologação utilizei o GLPI, para validar a arquitetura das 3 camadas, com balanceamento de carga público, computação isolada em sub-redes privadas e governança de acesso administrativo sem portas expostas.
+Esse Blueprint provisiona a pilha de aplicação e banco de dados para fim de homologação utilizei o GLPI, para validar a arquitetura das 3 camadas, com balanceamento de carga público, computação isolada em sub-redes privadas e governança de acesso administrativo sem portas expostas.
 
 O objetivo deste template é gerenciar o ciclo de vida dos recursos que geram cobrança contínua (como balanceadores, instâncias EC2, Elastic IP e NAT Gateway), consumindo de forma transparente a rede provisionada pelo módulo `01-vpc-base`.
 
@@ -40,7 +40,7 @@ A infraestrutura consome os recursos de rede do módulo base via `data "terrafor
 
 ---
 
-## 📁 Directory Structure
+## Estrutura do Diretorio
 
 ```text
 02-glpi-ec2-stack/
