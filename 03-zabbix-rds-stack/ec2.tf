@@ -35,7 +35,7 @@ resource "aws_instance" "zabbix" {
   user_data = templatefile("${path.module}/docs/zabbix.sh.tftpl", {
     db_host = aws_db_instance.zabbix-db.address
     db_name = var.db_name
-    db_user = var.db_user
-    db_pass = var.db_pass
+    db_user = var.db_username
+    db_pass = var.db_password
   })
 }

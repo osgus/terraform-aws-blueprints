@@ -2,7 +2,7 @@
 
 Esse Blueprint provisiona a pilha de aplicação em EC2 e banco de dados em RDS para fim de homologação utilizei o Zabbix,integrando a camada de aplicação a uma instância gerenciada de banco de dados Amazon RDS (MySQL). A arquitetura valida o modelo em três camadas desacopladas, com balanceamento de carga público, computação isolada em sub-redes privadas e banco de dados gerenciado em sub-redes privadas dedicadas.
 
-O objetivo deste template é gerenciar o ciclo de vida dos recursos que geram cobrança contínua (como Application Load Balancer, instâncias EC2, Elastic IP, NAT Gateway e instância RDS), consumindo de forma transparente a rede provisionada pelo módulo `01-vpc-base`.
+O objetivo deste template é utilizar Application Load Balancer, instâncias EC2, Elastic IP, NAT Gateway e instância RDS, consumindo de forma transparente a rede provisionada pelo módulo `01-vpc-base`.
 
 ---
 
@@ -27,7 +27,7 @@ A infraestrutura consome os recursos de rede do módulo base via `data "terrafor
   * `alb-sg`: Permite entrada na porta 80 a partir da internet (`0.0.0.0/0`).
   * `app-sg`: Permite entrada na porta 80 exclusivamente a partir do Security Group do ALB (`alb-sg`), além da porta 10051 para comunicação com agentes ativos.
   * `db-sg`: Permite entrada na porta 3306 (MySQL) exclusivamente a partir do Security Group da aplicação (`app-sg`).
-* **Criptografia em Trânsito (TLS/SSL):** A comunicação entre o backend do Zabbix Server e o Amazon RDS utiliza o certificado de autoridade certificadora oficial da AWS (`global-bundle.pem`) via parâmetro `DBCAFile`, garantindo integridade e conformidade de rede.
+* **Criptografia em Trânsito (TLS/SSL):** A comunicação entre o backend do Zabbix Server e o Amazon RDS utiliza o certificado de autoridade certificadora oficial da AWS (`global-bundle.pem`), garantindo integridade e conformidade de rede.
 * **Saída Segura para Instalações e Atualizações:** O NAT Gateway e seu respectivo Elastic IP são criados apenas enquanto a stack estiver ativa, garantindo conectividade de saída para a execução do script de inicialização (*user_data*).
 
 ---
@@ -37,7 +37,7 @@ A infraestrutura consome os recursos de rede do módulo base via `data "terrafor
 * **Consumo Dinâmico de Remote State:** O módulo lê os identificadores da VPC, das sub-redes e da tabela de rotas privada diretamente do arquivo de estado do S3 gerado pelo `01-vpc-base`, mantendo as camadas completamente desacopladas.
 * **Resolução Limpa de Endereçamento do RDS:** O provisionamento consome diretamente o atributo `aws_db_instance.zabbix-db.address`, garantindo a injeção estrita do hostname DNS do banco sem a porta `:3306`.
 * **Ciclo de Vida Efêmero e Otimização de Custos:** Ao separar a computação da rede base, todos os recursos com tarifação ativa podem ser provisionados ou totalmente destruídos (`terraform destroy`) sem impactar a topologia e as configurações da VPC.
-* **Provisionamento Automatizado via User Data Template:** A instância EC2 executa o script `./docs/zabbix.sh.tftpl`, que automatiza a compilação de locales (`en_US.UTF-8`), a criação da base no RDS, a importação do schema (`server.sql.gz`) e a pré-configuração do frontend em `127.0.0.1:10051`, eliminando o assistente manual de instalação web.
+* **Provisionamento Automatizado via User Data Template:** A instância EC2 executa o script `./docs/zabbix.sh.tftpl`, que automatiza a compilação de locales (`en_US.UTF-8`), a criação da base no RDS, a importação do schema (`server.sql.gz`) e a pré-configuração do frontend, eliminando o assistente manual de instalação web.
 * **Dependência Explícita de Saída:** O provisionamento da instância EC2 conta com `depends_on = [aws_nat_gateway.nat, aws_route.private_internet_access, aws_db_instance.zabbix-db]` para assegurar que o script de *user_data* só inicie após o canal de saída do NAT Gateway e a instância de banco estarem operacionais.
 
 ---

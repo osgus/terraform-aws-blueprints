@@ -97,17 +97,3 @@ variable "db_engine_version" {
   type        = string
   default     = "8.4.11"
 }
-
-#Altere para o valor default o nome do usuario do banco de dados que deseja utilizar
-variable "db_user" {
-  description = "Nome de usuário do banco de dados"
-  type        = string
-  default     = "zabbix"
-}
-
-#Altere para o valor default a senha do usuario do banco de dados que deseja utilizar
-variable "db_pass" {
-  description = "Senha do banco de dados"
-  type        = string
-  default     = "Amarelo0!"
-}
