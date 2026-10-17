@@ -5,7 +5,7 @@ A proposta desse projeto é criar e documentar uma arquitetura de infraestrutura
 o pretenção é separar a camada de rede das demais camadas de computação e dados, permitindo que diferentes cargas de trabalho consumam a infraestrutura base de forma independente.
 
 ## Arquitetura Geral
-> <Diagrama em construcão...>
+![Arquitetura da Infraestrutura](./docs/architecture.png)>
 
 O repositório é estruturado em módulos independentes:
 
@@ -14,7 +14,7 @@ O repositório é estruturado em módulos independentes:
 | **01** | [`01-vpc-base`](./01-vpc-base/) | VPC, segmentação de subnets públicas e privadas em Multi-AZ, Internet Gateway, tabelas de rotas e backend remoto. | Completed |
 | **02** | [`02-ec2-stack`](./02-ec2-stack/) | Provisiona a pilha de ALB, Aplicação e Banco de Dados desacoplada em três camadas| Completed |
 | **03** | [`03-zabbix-rds-stack`](./03-zabbix-rds-stack/) | Provisiona a pilha de ALB, Aplicação e banco de dados relacional gerenciado (Amazon RDS MySQL) em subnets privadas dedicadas. | Completed |
-| **04** | | | |
+| **04** | [`04-ecs-metabase-stack`](./04-ecs-metabase-stack/) | Provisiona a pilha de BI Metabase conteinerizada em AWS ECS Fargate (Serverless) com ALB público e banco de dados relacional gerenciado (Amazon RDS PostgreSQL) em subnets privadas dedicadas. | Completed |
 
 ## Pré-requisitos e Backend de Estado (S3)
 

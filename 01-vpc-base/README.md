@@ -40,15 +40,15 @@ A topologia implementa uma (VPC) inicial com duas Zonas de Disponibilidade (`us-
 
 * **Desacoplamento de Saídas:** Os recursos necessários para módulos subsequentes são exportados por meio do arquivo `outputs.tf` para consumo via `data "terraform_remote_state"`, eliminando dependências fixas (hardcoded) entre camadas.
 
-## 📁 Directory Structure
+## Estrutura do Diretorio
 
 ```
 01-vpc-base/
-├── main.tf          # Configuração do provider AWS e backend remote state do S3. OBS: Lembresse de editar o campo bucket, region e profile e alimentar com as informações do seu ambiente
-├── variables.tf     # VPC CIDR block and structured subnet object map. OBS: Aqui voce deve alterar os campos default das variaveis "aws_profile" e "default_tags". O default das demais variaveis podem ser alteradas caso queira mudar a region e os blocos de rede
-├── network.tf       # VPC, Subnets, IGW, Route Tables, e Associations OBS: Todos os parametros configurados no variables.tf são utilizados aqui, portanto não terão alterações a serem feitas
-├── outputs.tf       # IDs de VPC e sub-rede exportados
-└── README.md        # Documentação técnica do módulo
+├── main.tf          # Configuração do provider AWS e backend remote state do S3.
+├── variables.tf     # VPC CIDR block and structured subnet object map.
+├── network.tf       # VPC, Subnets, IGW, Route Tables, e Associations.
+├── outputs.tf       # IDs de VPC e sub-rede exportados.
+└── README.md        # Documentação técnica do módulo.
 
 ```
 
